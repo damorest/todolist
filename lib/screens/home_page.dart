@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../model/task_model.dart';
-import 'package:uuid/uuid.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -10,8 +9,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  var uuid = Uuid();
-
   late String newTask;
 
   void deleteTask(List tasks, int index) {
@@ -26,8 +23,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    var v4 = uuid.v4();
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
@@ -59,7 +54,7 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(height: 30),
           ElevatedButton(
               onPressed: () {
-                Task task = Task(v4, newTask, false);
+                Task task = Task(taskName: newTask);
                 addTask(taskList, task);
                 setState(() { });
                 print('ID : ${task.id}');
@@ -75,19 +70,16 @@ class _HomePageState extends State<HomePage> {
               itemCount: taskList.length,
               itemBuilder: (BuildContext context, int index) {
                 return ListTile(
-                  // leading: Checkbox(
-                  //     value: task.isDone,
-                  //     tristate: true,
-                  //     onChanged: (newBool) {
-                  //       setState(() {
-                  //
-                  //       });
-                  //     } ),
+                  leading: Checkbox(
+                      value: taskList[index].isDone,
+                      tristate: true,
+                      onChanged: (newBool) {
+                        setState(() { });
+                      } ),
                   title: Text(taskList[index].taskName),
                   trailing: IconButton(
                     onPressed: () {
                       deleteTask(taskList, index);
-                      print('Task id : ${taskList.last.id}');
                       setState(() {});
                     },
                     icon: const Icon(Icons.delete_sweep, color: Colors.redAccent),
