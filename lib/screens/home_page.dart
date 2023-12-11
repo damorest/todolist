@@ -11,13 +11,19 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Task? task;
-  bool _isDone = false;
+  bool? _isDone = false;
+  late String newTask;
 
-  void changeStatus () {
-    _isDone = !_isDone;
+
+  void deleteTask(List tasks, int index) {
+    tasks.removeAt(index);
   }
 
-  List<String> taskList = ['buy water', 'check email'];
+  void addTask(List tasks, String inputText) {
+    tasks.add(inputText);
+  }
+
+  List<String> taskList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -33,23 +39,54 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         children: [
           const Center(
-            child: Text('Список справ :',
-            style: TextStyle(
-              fontSize: 25,
-            ) ,
+            child: Text(
+              'Список справ :',
+              style: TextStyle(
+                fontSize: 25,
+              ),
             ),
           ),
+          SizedBox(
+            width: 250,
+            child: TextField(
+              onChanged: (text) {
+                newTask = text;
+                setState(() { });
+              },
+            ),
+          ),
+          const SizedBox(height: 30),
+          ElevatedButton(onPressed: () {
+            addTask(taskList, newTask );
+            setState(() {
+
+            });
+          }, child: const Text('Додати')),
           ListView.builder(
-            shrinkWrap:true,
+            shrinkWrap: true,
             scrollDirection: Axis.vertical,
             itemCount: taskList.length,
             itemBuilder: (BuildContext context, int index) {
               return ListTile(
-                // leading: Checkbox(value: task!.isDone, onChanged: () {
-                //   changeStatus();
-                // } ),
-                title: Text(taskList[index]),
-              );
+                      leading: Checkbox(
+                          value: _isDone,
+                          tristate: true,
+                          onChanged: (newBool) {
+                            setState(() {
+                              _isDone = newBool;
+                            });
+                          } ),
+                      title: Text(taskList[index]),
+                      trailing: IconButton(
+                        onPressed: () {
+                          deleteTask(taskList, index);
+                          print(taskList.toString());
+                          setState(() {});
+                        },
+                        icon: const Icon(Icons.delete_sweep,
+                            color: Colors.redAccent),
+                      ),
+                    );
             },
           ),
         ],
