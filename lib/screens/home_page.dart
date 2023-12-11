@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobx/mobx.dart';
 import '../model/task_model.dart';
+import 'package:uuid/uuid.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -10,23 +10,24 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Task? task;
-  bool? _isDone = false;
-  late String newTask;
+  var uuid = Uuid();
 
+  late String newTask;
 
   void deleteTask(List tasks, int index) {
     tasks.removeAt(index);
   }
 
-  void addTask(List tasks, String inputText) {
+  void addTask(List tasks, inputText) {
     tasks.add(inputText);
   }
 
-  List<String> taskList = [];
+  List<Task> taskList = [];
 
   @override
   Widget build(BuildContext context) {
+    var v4 = uuid.v4();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
@@ -51,43 +52,49 @@ class _HomePageState extends State<HomePage> {
             child: TextField(
               onChanged: (text) {
                 newTask = text;
-                setState(() { });
+                setState(() {});
               },
             ),
           ),
           const SizedBox(height: 30),
-          ElevatedButton(onPressed: () {
-            addTask(taskList, newTask );
-            setState(() {
+          ElevatedButton(
+              onPressed: () {
+                Task task = Task(v4, newTask, false);
+                addTask(taskList, task);
+                setState(() { });
+                print('ID : ${task.id}');
+                print('IS Done : ${task.isDone}');
+                print('Task Name : ${task.taskName}');
 
-            });
-          }, child: const Text('Додати')),
-          ListView.builder(
-            shrinkWrap: true,
-            scrollDirection: Axis.vertical,
-            itemCount: taskList.length,
-            itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                      leading: Checkbox(
-                          value: _isDone,
-                          tristate: true,
-                          onChanged: (newBool) {
-                            setState(() {
-                              _isDone = newBool;
-                            });
-                          } ),
-                      title: Text(taskList[index]),
-                      trailing: IconButton(
-                        onPressed: () {
-                          deleteTask(taskList, index);
-                          print(taskList.toString());
-                          setState(() {});
-                        },
-                        icon: const Icon(Icons.delete_sweep,
-                            color: Colors.redAccent),
-                      ),
-                    );
-            },
+              },
+              child: const Text('Додати')),
+          Expanded(
+            child: ListView.builder(
+              shrinkWrap: true,
+              scrollDirection: Axis.vertical,
+              itemCount: taskList.length,
+              itemBuilder: (BuildContext context, int index) {
+                return ListTile(
+                  // leading: Checkbox(
+                  //     value: task.isDone,
+                  //     tristate: true,
+                  //     onChanged: (newBool) {
+                  //       setState(() {
+                  //
+                  //       });
+                  //     } ),
+                  title: Text(taskList[index].taskName),
+                  trailing: IconButton(
+                    onPressed: () {
+                      deleteTask(taskList, index);
+                      print('Task id : ${taskList.last.id}');
+                      setState(() {});
+                    },
+                    icon: const Icon(Icons.delete_sweep, color: Colors.redAccent),
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),

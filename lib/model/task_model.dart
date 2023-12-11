@@ -1,6 +1,11 @@
 
 class Task {
-  int? id;
-  String? taskName;
-  bool? isDone;
+  final String id;
+  final String taskName;
+  final bool isDone;
+
+  Task(
+      this.id,
+      this.taskName,
+      this.isDone);
 }
