@@ -1,9 +1,11 @@
+import 'package:mobx/mobx.dart';
 import 'package:uuid/uuid.dart';
 
 class TaskModel {
   final String id;
   final String taskName;
-  final bool isDone;
+  @observable
+  bool isDone;
 
   TaskModel({
     String? id,
@@ -11,4 +13,8 @@ class TaskModel {
     this.isDone = false
   })
       : id = id ?? Uuid().v4();
+  @action
+  void toggleDone() {
+      isDone = !isDone;
+  }
 }
