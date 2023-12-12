@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todolist/mobx/mobx_state.dart';
 import '../model/task_model.dart';
 
 class HomePage extends StatefulWidget {
@@ -11,15 +12,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late String newTask;
 
-  void deleteTask(List tasks, int index) {
-    tasks.removeAt(index);
-  }
+  final taskStore = TaskStore();
 
-  void addTask(List tasks, inputText) {
-    tasks.add(inputText);
-  }
-
-  List<Task> taskList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -54,9 +48,8 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(height: 30),
           ElevatedButton(
               onPressed: () {
-                Task task = Task(taskName: newTask);
-                addTask(taskList, task);
-                setState(() { });
+                TaskModel task = TaskModel(taskName: newTask);
+                taskStore.addTask(task);
                 print('ID : ${task.id}');
                 print('IS Done : ${task.isDone}');
                 print('Task Name : ${task.taskName}');
@@ -67,20 +60,19 @@ class _HomePageState extends State<HomePage> {
             child: ListView.builder(
               shrinkWrap: true,
               scrollDirection: Axis.vertical,
-              itemCount: taskList.length,
+              itemCount: taskStore.listTasks.length,
               itemBuilder: (BuildContext context, int index) {
                 return ListTile(
                   leading: Checkbox(
-                      value: taskList[index].isDone,
+                      value: taskStore.listTasks[index].isDone,
                       tristate: true,
                       onChanged: (newBool) {
                         setState(() { });
                       } ),
-                  title: Text(taskList[index].taskName),
+                  title: Text(taskStore.listTasks[index].taskName),
                   trailing: IconButton(
                     onPressed: () {
-                      deleteTask(taskList, index);
-                      setState(() {});
+                      taskStore.deleteTask(index);
                     },
                     icon: const Icon(Icons.delete_sweep, color: Colors.redAccent),
                   ),

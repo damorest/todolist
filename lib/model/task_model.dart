@@ -1,11 +1,11 @@
 import 'package:uuid/uuid.dart';
 
-class Task {
+class TaskModel {
   final String id;
   final String taskName;
   final bool isDone;
 
-  Task({
+  TaskModel({
     String? id,
     required this.taskName,
     this.isDone = false
