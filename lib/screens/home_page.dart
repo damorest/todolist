@@ -74,8 +74,7 @@ class _HomePageState extends State<HomePage> {
                         value: taskStore.listTasks[index].isDone,
                         tristate: true,
                         onChanged: (newBool) {
-                          taskStore.listTasks[index].toggleDone();
-                          setState(() { });
+                         taskStore.toggleDone(taskStore.listTasks[index].taskName, index);
                         } ),
                     title: Text(taskStore.listTasks[index].taskName),
                     trailing: IconButton(

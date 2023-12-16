@@ -18,4 +18,14 @@ abstract class _TaskStore with Store {
     listTasks.removeAt(index);
   }
 
+  @action
+  void toggleDone(String taskName, int index) {
+
+    if(listTasks[index].isDone == false) {
+      listTasks[index] = TaskModel(taskName: taskName, isDone: true);
+    } else {
+      listTasks[index] = TaskModel(taskName: taskName, isDone: false);
+    }
+  }
+
 }
