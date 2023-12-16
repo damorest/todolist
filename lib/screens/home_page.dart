@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:mobx/mobx.dart';
 import 'package:todolist/mobx/mobx_state.dart';
+import 'package:todolist/screens/completed_screen.dart';
 import '../model/task_model.dart';
 import 'package:provider/provider.dart';
+
+import 'not_complete_filter_screen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -62,6 +66,25 @@ class _HomePageState extends State<HomePage> {
                 _textEditingController.clear();
                 },
               child: const Text('Додати')),
+          const SizedBox(height: 30),
+          const Text('Фільтри'),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              ElevatedButton(onPressed: () {
+                print('Довжина списку : ${taskStore.listTasks.length}');
+              }, child: const Text('Всі')),
+              ElevatedButton(onPressed: () {
+                List<TaskModel> tasListCompleted = taskStore.comletedTasks();
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) =>  CompletedPage(taskComplit: tasListCompleted)));
+              },
+                  child: const Text('Виконані')),
+              ElevatedButton(onPressed: () {
+                ObservableList<TaskModel> newTaskNotCompl = taskStore.notComletedTasks();
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) =>  NotCompleteScreen(taskNotComplit:newTaskNotCompl)));
+              }, child: const Text('Не виконані')),
+            ],
+          ),
           Expanded(
             child: Observer(
               builder:(_) => ListView.builder(
