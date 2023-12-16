@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobx/mobx.dart';
 import 'package:todolist/mobx/mobx_state.dart';
-import 'package:todolist/screens/completed_screen.dart';
 import '../model/task_model.dart';
 import 'package:provider/provider.dart';
-
-import 'not_complete_filter_screen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,6 +13,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  static const int allFilter = 0;
+  static const int completedFilter = 1;
+  static const int notCompletedFilter = 2;
+
+  int currentFilter = allFilter;
+
   late String newTask;
   late TextEditingController _textEditingController;
 
@@ -29,6 +32,19 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
 
     final taskStore = context.watch<TaskStore>();
+
+    ObservableList<TaskModel> getTaskList () {
+      switch (currentFilter) {
+      case allFilter:
+        return taskStore.listTasks;
+      case completedFilter:
+        return taskStore.comletedTasks();
+        case notCompletedFilter:
+          return taskStore.notComletedTasks();
+        default:
+          return taskStore.listTasks;
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -64,6 +80,7 @@ class _HomePageState extends State<HomePage> {
                 TaskModel task = TaskModel(taskName: newTask);
                 taskStore.addTask(task);
                 _textEditingController.clear();
+                print('Довжина : ${taskStore.quantityNotCompletedTask()}');
                 },
               child: const Text('Додати')),
           const SizedBox(height: 30),
@@ -72,17 +89,22 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               ElevatedButton(onPressed: () {
-                print('Довжина списку : ${taskStore.listTasks.length}');
-              }, child: const Text('Всі')),
+                setState(() {
+                  currentFilter = allFilter;
+                });
+
+              }, child: const Text('Всі ')),
               ElevatedButton(onPressed: () {
-                List<TaskModel> tasListCompleted = taskStore.comletedTasks();
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) =>  CompletedPage(taskComplit: tasListCompleted)));
+                setState(() {
+                  currentFilter = completedFilter;
+                });
               },
-                  child: const Text('Виконані')),
+                  child: const Text('Виконані ')),
               ElevatedButton(onPressed: () {
-                ObservableList<TaskModel> newTaskNotCompl = taskStore.notComletedTasks();
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) =>  NotCompleteScreen(taskNotComplit:newTaskNotCompl)));
-              }, child: const Text('Не виконані')),
+                setState(() {
+                  currentFilter = notCompletedFilter;
+                });
+                }, child: Observer(builder: (_) => Text('Не виконані ${taskStore.quantityNotCompletedTask()}'))),
             ],
           ),
           Expanded(
@@ -90,16 +112,16 @@ class _HomePageState extends State<HomePage> {
               builder:(_) => ListView.builder(
                 shrinkWrap: true,
                 scrollDirection: Axis.vertical,
-                itemCount: taskStore.listTasks.length,
+                itemCount: getTaskList().length,
                 itemBuilder: (BuildContext context, int index) {
                   return ListTile(
                     leading: Checkbox(
-                        value: taskStore.listTasks[index].isDone,
+                        value: getTaskList()[index].isDone,
                         tristate: true,
                         onChanged: (newBool) {
-                         taskStore.toggleDone(taskStore.listTasks[index].taskName, index);
+                         taskStore.toggleDone(getTaskList()[index].taskName, index);
                         } ),
-                    title: Text(taskStore.listTasks[index].taskName),
+                    title: Text(getTaskList()[index].taskName),
                     trailing: IconButton(
                       onPressed: () {
                         taskStore.deleteTask(index);

@@ -33,9 +33,13 @@ abstract class _TaskStore with Store {
   }
 
   @computed
-  List<TaskModel> comletedTasks() {
-    return listTasks.where((element) => element.isDone == true).toList();
+  ObservableList<TaskModel> comletedTasks() {
+    return ObservableList.of(listTasks.where((element) => element.isDone == true).toList());
   }
 
+  @computed
+  int quantityNotCompletedTask () {
+    return notComletedTasks().length;
+  }
 
 }
