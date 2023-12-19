@@ -18,4 +18,28 @@ abstract class _TaskStore with Store {
     listTasks.removeAt(index);
   }
 
+  @action
+  void toggleDone(String taskName, int index) {
+
+    if(listTasks[index].isDone == false) {
+      listTasks[index] = TaskModel(taskName: taskName, isDone: true);
+    } else {
+      listTasks[index] = TaskModel(taskName: taskName, isDone: false);
+    }
+  }
+  @computed
+  ObservableList<TaskModel> notComletedTasks() {
+    return ObservableList.of(listTasks.where((element) => element.isDone == false).toList());
+  }
+
+  @computed
+  ObservableList<TaskModel> comletedTasks() {
+    return ObservableList.of(listTasks.where((element) => element.isDone == true).toList());
+  }
+
+  @computed
+  int quantityNotCompletedTask () {
+    return notComletedTasks().length;
+  }
+
 }
